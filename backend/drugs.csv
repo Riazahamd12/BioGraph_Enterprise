@@ -1,0 +1,16 @@
+name,smiles
+Aspirin,CC(=O)Oc1ccccc1C(=O)O
+Paracetamol,CC(=O)Nc1ccc(O)cc1
+Ibuprofen,CC(C)Cc1ccc(C(C)C(=O)O)cc1
+Caffeine,Cn1cnc2c1c(=O)n(C)c(=O)n2C
+Remdesivir,CCC(CC)COC(=O)C(C)NP(=O)(OC1CCCCC1)OC2C(C(C(O2)C#N)O)O
+Chloroquine,CCN(CC)CCCC(C)NC1=C2C=CC(Cl)=CC2=NC=C1
+Dexamethasone,CC1CC2C3CCC4=CC(=O)C=CC4(C3(C(CC2(C1(C(=O)CO)O)C)O)F)C
+Metformin,CN(C)C(=N)NC(=N)N
+Amoxicillin,CC1(C(N2C(S1)C(C2=O)NC(=O)C(C3=CC=C(C=C3)O)N)C(=O)O)C
+Omeprazole,Cc1c(C)c(OC)nc(CS(=O)c2nc3ccc(OC)cc3[nH]2)c1C
+Simvastatin,CCC(C)(C)C(=O)OC1CC(C=C2C1C(C(C=C2)C)CCC3CC(CC(=O)O3)O)C
+Metoprolol,CC(C)NCC(O)COc1ccc(cc1)CCOC
+Lisinopril,NCCCCC(N)C(=O)N1CCCC1C(=O)O
+Azithromycin,CN(C)C1C(CC(C1O)C)OC2C(OC(C(C2O)N(C)C)C)C
+Diazepam,CN1C(=O)CN=C(C2=C1C=CC(=C2)Cl)C3=CC=CC=C3
