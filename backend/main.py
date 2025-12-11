@@ -1,4 +1,5 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, UploadFile, File, Form 
+from fastapi.responses import Response 
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 import random
@@ -6,6 +7,7 @@ import time
 import pandas as pd
 import io
 import os
+import requests 
 
 # --- RDKit IMPORTS ---
 from rdkit import Chem
@@ -37,26 +39,37 @@ def calculate_properties(smiles):
 
 @app.get("/")
 def home():
-    return {"status": "BioGraph AI Engine (Pandas + RDKit) 🟢"}
+    return {"status": "BioGraph AI Engine Ready 🟢"}
 
-# --- MAIN ANALYSIS ENDPOINT ---
+@app.get("/get_image")
+def get_image(smiles: str):
+    url = f"https://cactus.nci.nih.gov/chemical/structure/{smiles}/image?width=1000&height=1000&bgcolor=transparent"
+    try:
+        r = requests.get(url)
+        return Response(content=r.content, media_type="image/png")
+    except:
+        return Response(status_code=404)
+
 @app.post("/analyze")
 def analyze_drug(data: AnalysisRequest):
-    
-    # 1. MANUAL MODE (Single Drug)
+    # 1. MANUAL MODE
     if data.mode == "manual":
-        time.sleep(1) # Simulation
+        time.sleep(1)
         props = calculate_properties(data.smiles)
         if not props: return {"error": "Invalid Structure"}
         
-        # Fake AI Score (Phase 4 main Real Model aayega)
         score = round(random.uniform(6.0, 9.8), 2)
         
+        # --- NEW: CONFIDENCE CALCULATION ---
+        # Score jitna high, Confidence utna high (Simulation)
+        confidence_val = int((score / 10) * 100) + random.randint(-2, 2)
+        confidence_val = min(max(confidence_val, 85), 99) # 85% se 99% ke beech rakho
+
         return {
             "type": "single",
             "score": score,
             "status": "ACTIVE" if score > 7.0 else "INACTIVE",
-            "confidence": "RDKit Verified",
+            "confidence": f"{confidence_val}%", # Ab ye Percentage bheje ga
             "color": "#00f3ff" if score > 7.0 else "#ff0055",
             "graph": [
                 {"subject": "Binding", "A": int(score * 10), "fullMark": 100},
@@ -67,55 +80,40 @@ def analyze_drug(data: AnalysisRequest):
             ]
         }
 
-    # 2. AUTO SCAN MODE (Read form CSV)
+    # 2. AUTO SCAN MODE
     elif data.mode == "auto":
-        time.sleep(2) # Feel good delay
+        time.sleep(1.5)
         results = []
-        
-        # CSV Read karo
         if os.path.exists("drugs.csv"):
             df = pd.read_csv("drugs.csv")
-            
-            # Har drug ko process karo
             for _, row in df.iterrows():
-                props = calculate_properties(row['smiles'])
-                if props:
-                    # Fake Binding Score Logic
-                    score = round(random.uniform(5.0, 9.9), 2)
-                    results.append({
-                        "name": row['name'],
-                        "smiles": row['smiles'],
-                        "score": score,
-                        "status": "ACTIVE" if score > 7.5 else "INACTIVE"
-                    })
-            
-            # Sort by Best Score
+                score = round(random.uniform(5.0, 9.9), 2)
+                results.append({
+                    "name": row['name'],
+                    "smiles": row['smiles'],
+                    "score": score,
+                    "status": "ACTIVE" if score > 7.5 else "INACTIVE"
+                })
             results.sort(key=lambda x: x["score"], reverse=True)
-            # Top 20 bhejo
             return {"type": "batch", "results": results[:20]}
         else:
-            return {"error": "Database not found"}
+            return {"error": "drugs.csv not found"}
 
-# --- REAL FILE UPLOAD ENDPOINT ---
 @app.post("/upload")
-async def upload_file(file: UploadFile = File(...)):
+async def upload_file(target_id: str = Form(...), file: UploadFile = File(...)):
     try:
         contents = await file.read()
-        
-        # Excel ya CSV detect karo
         if file.filename.endswith('.csv'):
             df = pd.read_csv(io.BytesIO(contents))
         elif file.filename.endswith(('.xls', '.xlsx')):
             df = pd.read_excel(io.BytesIO(contents))
         else:
-            return {"error": "Invalid file format. Use CSV or Excel."}
+            return {"error": "Invalid file format"}
 
         results = []
-        # Pehle 2 columns uthao (Name, SMILES)
-        for _, row in df.head(50).iterrows(): # Limit to 50 for speed
+        for _, row in df.head(50).iterrows():
             name = str(row.iloc[0])
-            smiles = str(row.iloc[1])
-            
+            smiles = str(row.iloc[1]) 
             props = calculate_properties(smiles)
             if props:
                 score = round(random.uniform(4.0, 9.5), 2)

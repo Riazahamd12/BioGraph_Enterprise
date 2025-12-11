@@ -10,8 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "3dmol": "^2.5.3",
     "axios": "^1.13.2",
     "framer-motion": "^12.23.25",
+    "html-to-image": "^1.11.13",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^3.0.4",
     "lucide-react": "^0.556.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
