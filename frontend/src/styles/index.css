@@ -1,0 +1,13 @@
+/* index.css - entry: imports all partials */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap');
+
+@import './01-variables.css';
+@import './02-base.css';
+@import './03-layout.css';
+@import './04-navbar.css';
+@import './05-panels.css';
+@import './06-hologram-and-graphics.css';
+@import './07-result-card.css';
+@import './08-studio-and-viewer.css';
+@import './09-tabs-lists.css';
+@import './10-animations-resp.css';

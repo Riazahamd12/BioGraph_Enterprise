@@ -1,0 +1,22 @@
+/* Tabs, lists, scan results styling */
+.tab-group { display:flex; gap:8px; margin-bottom:20px; background: rgba(0,0,0,0.3); padding:5px; border-radius:12px; border:1px solid rgba(255,255,255,0.05); }
+.tab-btn { flex:1; padding:10px; border:none; background:transparent; color:#888; font-weight:700; cursor:pointer; border-radius:8px; transition:0.3s; font-size:11px; letter-spacing:1px; }
+.tab-btn.active { background: var(--neon-cyan); color:#000; box-shadow: 0 0 15px rgba(0,243,255,0.4); }
+
+.suggestions-box { display:flex; gap:10px; margin-top:10px; font-size:11px; color:#fff; font-weight:600; flex-wrap:wrap; }
+.suggestion-text { color:#888; cursor:pointer; transition:all 0.3s ease; border-bottom:1px dashed rgba(255,255,255,0.2); }
+.suggestion-text:hover { color:var(--neon-cyan); text-shadow:0 0 8px rgba(0,243,255,0.8); border-color:var(--neon-cyan); }
+
+/* Scan list */
+.scan-results-list { width:90%; max-width:1100px; background: rgba(255,255,255,0.02); border-radius:20px; padding:20px; animation: fadeIn 0.6s ease; }
+.list-header { display:flex; justify-content:space-between; color:#888; font-size:11px; margin-bottom:15px; padding:0 15px; text-transform:uppercase; letter-spacing:1px; }
+.scan-item { display:flex; justify-content:space-between; align-items:center; background: rgba(255,255,255,0.05); padding:15px 20px; border-radius:10px; margin-bottom:10px; border:1px solid transparent; transition:0.3s; cursor:pointer; }
+.scan-item:hover { background: rgba(0,243,255,0.1); border-color: var(--neon-cyan); transform: translateX(5px); }
+.drug-name { font-weight:700; color:#fff; font-size:14px; }
+.match-score { font-weight:800; font-size:16px; }
+
+/* scrollbar for list */
+.scan-results-list::-webkit-scrollbar { width:8px; }
+.scan-results-list::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); border-radius:4px; }
+.scan-results-list::-webkit-scrollbar-thumb { background: var(--neon-cyan); border-radius:4px; border:1px solid rgba(0,0,0,0.5); }
+.scan-results-list::-webkit-scrollbar-thumb:hover { background:#fff; }

@@ -1,0 +1,19 @@
+/* Studio + viewer + viewer fullscreen + viewer embedded */
+.viewer-container-embedded { width:100%; height:180px; position:relative; overflow:hidden; border-radius:10px; }
+.viewer-container-fullscreen {
+  position: fixed !important; top:0; left:0; width:100vw !important; height:100vh !important; background:#000; z-index:9999 !important; display:flex; justify-content:center; align-items:center;
+}
+.fullscreen-close-btn { position:absolute; top:20px; right:20px; z-index:10000 !important; background: rgba(255,0,85,0.8); color:white; padding:10px 20px; border-radius:30px; border:none; cursor:pointer; font-weight:bold; box-shadow:0 0 20px rgba(255,0,85,0.5); }
+
+/* Studio layout */
+.studio-box { width:100%; height:100%; flex-grow:1; background: rgba(5,5,8,0.6); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); display:flex; flex-direction:column; overflow:hidden; border-radius:12px; border:1px solid rgba(255,255,255,0.15); box-shadow:0 0 20px rgba(0,0,0,0.3); }
+.studio-toolbar { height:50px; flex-shrink:0; border-bottom:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:space-between; padding:0 20px; background: rgba(0,0,0,0.3); }
+.studio-workspace { flex-grow:1; display:flex; position:relative; overflow:hidden; height:100%; }
+.studio-viewport { flex-grow:1; position:relative; height:100%; background: radial-gradient(circle at center, rgba(30,30,40,0.5) 0%, rgba(5,5,8,0.8) 100%); }
+.studio-sidebar { width:280px; flex-shrink:0; border-left:1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); padding:20px; display:flex; flex-direction:column; overflow-y:auto; }
+
+.prop-divider { width:100%; height:1px; background: rgba(255,255,255,0.1); margin:20px 0; }
+.prop-item { display:flex; flex-direction:column; margin-bottom:15px; }
+.prop-label { font-size:10px; color:#888; margin-bottom:3px; font-weight:600; letter-spacing:0.5px; }
+.prop-value { font-size:14px; color:#fff; font-weight:600; }
+.ref-box { background:#fff; border-radius:8px; padding:10px; display:flex; align-items:center; justify-content:center; margin-top:auto; border:1px solid #ccc; }

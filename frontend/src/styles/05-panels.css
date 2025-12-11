@@ -1,0 +1,34 @@
+/* Panels, inputs, buttons, suggestions, hologram wrapper basics */
+.glass-panel {
+  background: rgba(255,255,255,0.03); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+  border:1px solid hwb(0 100% 0% / 0.1); border-radius:20px; padding:25px; box-shadow:0 8px 32px rgba(0,0,0,0.37);
+  display:flex; flex-direction:column; height:100%;
+}
+.panel-left { flex:0 0 350px; gap:20px; height:95%; }
+.panel-right { flex:1; position:relative; overflow:hidden; padding:0 !important; height:80%; background: rgba(0,0,0,0.2); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
+
+/* Common elements */
+.panel-header { display:flex; align-items:center; gap:10px; padding-bottom:15px; border-bottom:1px solid rgba(255,255,255,0.1); margin-bottom:20px; }
+.panel-title { margin:0; font-size:16px; letter-spacing:1px; color:#fff; }
+
+.input-group { margin-bottom:20px; }
+.input-label { display:block; font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; font-weight:600; }
+.input-wrapper { position:relative; }
+.input-icon { position:absolute; top:13px; left:12px; }
+
+.cyber-input {
+  width:100%; background: rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:12px 15px; padding-left:35px; color:white; outline:none; transition:0.3s; box-sizing:border-box;
+}
+.cyber-input.textarea { padding-left:15px; font-size:12px; font-family:monospace; }
+.cyber-input:focus { border-color:var(--neon-cyan); background: rgba(0,0,0,0.5); box-shadow: 0 0 10px rgba(0,243,255,0.2); }
+
+.cyber-btn {
+  width:100%; padding:15px; background: linear-gradient(90deg, var(--neon-cyan), #0066ff); border:none; border-radius:10px; color:#000; font-weight:700; text-transform:uppercase; letter-spacing:1px; cursor:pointer; transition:0.3s; margin-top:auto;
+}
+.cyber-btn:hover { transform: translateY(-2px); box-shadow:0 0 25px rgba(0,243,255,0.6); }
+.btn-content { display:flex; align-items:center; justify-content:center; gap:10px; }
+
+/* suggestions */
+.suggestions-box { display:flex; gap:15px; margin-top:10px; font-size:11px; color:#fff; font-weight:900; }
+.suggestion-text { color:#888; cursor:pointer; transition:all .3s ease; font-weight:500; letter-spacing:.5px; }
+.suggestion-text:hover { color:var(--neon-cyan); text-shadow:0 0 8px rgba(0,243,255,0.8); }

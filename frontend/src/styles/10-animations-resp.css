@@ -1,0 +1,46 @@
+/* Animations (shared) + responsive rules */
+
+/* Simple animations used earlier */
+@keyframes spin { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
+@keyframes spin-slow { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
+@keyframes spin-reverse { from { transform:rotate(360deg); } to { transform:rotate(0deg); } }
+@keyframes pulse-glow { 0%{ opacity:0.5; transform:scale(0.8);} 50%{ opacity:1; transform:scale(1.1);} 100%{ opacity:0.5; transform:scale(0.8);} }
+@keyframes fadeIn { from{ opacity:0; transform:scale(0.95);} to{ opacity:1; transform:scale(1);} }
+
+.animate-spin { animation: spin 1s linear infinite; }
+.animate-pulse { animation: pulse-glow 2s infinite; }
+
+/* RESPONSIVE (mobile fixes) */
+@media (max-width: 1024px) {
+  body, .app-container { overflow-y: auto !important; height: auto !important; }
+  .page-section { overflow-y: visible; height: auto; }
+  .app-container { padding-top: 60px; }
+  .glass-nav { height:60px !important; padding:0 15px !important; -webkit-backdrop-filter: blur(15px) !important; backdrop-filter: blur(15px) !important; }
+  .brand-text { font-size:16px !important; letter-spacing:0.5px !important; }
+  .glass-logo-container { padding:4px !important; }
+  .glass-logo-container svg { width:20px; height:20px; }
+  .nav-right { gap:8px !important; }
+  .nav-link { padding:8px !important; border-radius:8px !important; justify-content:center; }
+  .nav-link span { display:none !important; }
+
+  .main-layout { flex-direction:column; height:auto !important; margin-top:0; padding:10px; padding-bottom:50px; overflow:visible; align-items:center; }
+  .panel-left { flex:none; width:90%; margin-bottom:20px; }
+  .panel-right { flex:none; width:94%; height:auto !important; min-height:600px; overflow:visible !important; background: rgba(0,0,0,0.2); display:flex; flex-direction:column; padding:15px !important; padding-bottom:20px !important; align-items:center; top:-20px !important; left:0 !important; }
+
+  .hologram-wrapper { margin-top:40px !important; height:auto !important; min-height:350px; position:relative; display:flex; flex-direction:column; justify-content:flex-start; width:100%; }
+  .result-container-flex { height:auto !important; width:100%; margin-bottom:30px; }
+  .result-content-row { flex-direction:column; width:100%; gap:20px; align-items:center; }
+
+  .structure-box:first-child { width:100% !important; height:auto !important; min-height:200px; }
+  .structure-box:last-child { width:100% !important; height:300px !important; min-height:300px !important; background: rgba(0,0,0,0.6) !important; }
+
+  .result-card { position:relative !important; bottom:40px !important; left:0 !important; right:0 !important; display:flex; flex-direction:column !important; gap:10px; text-align:center; margin:0 auto !important; width:90% !important; padding:20px 10px; background: rgba(15,15,20,0.95); z-index:50; box-sizing:border-box; transform:none !important; }
+  .score-section { flex-direction:column; gap:10px; width:100%; align-items:center; }
+  .score-val { font-size:32px !important; }
+  .status-val { font-size:20px !important; }
+  .vertical-div { width:100%; height:1px; background: rgba(255,255,255,0.1); margin:10px 0; }
+  .metrics-container { width:100%; justify-content:center; margin-right:0; gap:15px; flex-wrap:wrap; }
+
+  .about-page-content { padding:20px; margin-top:0; width:95%; box-sizing:border-box; }
+  .about-hero-title { font-size:32px; }
+}
