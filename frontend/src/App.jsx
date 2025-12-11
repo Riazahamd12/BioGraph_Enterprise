@@ -130,10 +130,11 @@ function App() {
     return () => clearTimeout(styleTimeout);
   }, [style3D, smiles]);
 
-  // --- EFFECTS ---
+  // --- EFFECTS (UPDATED) ---
   useEffect(() => {
     let renderTimeout;
 
+    // 3D Rendering Logic
     if (resultView === 'visualization' && vizMode === '3D' && result && !isFullscreen) {
       viewerRef.current = null;
       if (mainViewerRef.current) mainViewerRef.current.innerHTML = '';
@@ -145,6 +146,11 @@ function App() {
           render3D(mainViewerRef.current, 'transparent');
         }
       }, 100);
+    }
+
+    // 2D Rendering Logic (New Fix: Ensure loading state is set)
+    if (resultView === 'visualization' && vizMode === '2D') {
+        setViewLoading(true);
     }
 
     return () => {
@@ -530,30 +536,34 @@ function App() {
                                 )}
                               </div>
 
-                              {/* Viewport */}
-                              <div key={vizMode} style={{ flexGrow: 1, position: 'relative', background: vizMode === '3D' ? 'radial-gradient(circle at center, rgba(30,30,40,0.5) 0%, rgba(5,5,8,0.8) 100%)' : '#fff' }}>
+                              {/* Viewport (UPDATED) */}
+                              <div key={vizMode} style={{ flexGrow: 1, position: 'relative', background: vizMode === '3D' ? 'radial-gradient(circle at center, rgba(30,30,40,0.5) 0%, rgba(5,5,8,0.8) 100%)' : '#fff', overflow: 'hidden' }}>
 
                                 {/* LOADING OVERLAY */}
                                 {viewLoading && (
                                   <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.7)', zIndex: 100, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(2px)' }}>
                                     <div className="animate-spin" style={{ marginBottom: '10px' }}><Atom size={40} color="#00f3ff" /></div>
-                                    <div style={{ color: '#00f3ff', fontSize: '12px', letterSpacing: '2px', fontWeight: 'bold' }}>LOADING VIEW...</div>
+                                    <div style={{ color: '#00f3ff', fontSize: '12px', letterSpacing: '2px', fontWeight: 'bold' }}>LOADING STRUCTURE...</div>
                                   </div>
                                 )}
 
                                 {vizMode === '2D' ? (
                                   <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
                                     <img
+                                      key={smiles}
                                       src={`http://127.0.0.1:8000/get_image?smiles=${encodeURIComponent(smiles)}`}
                                       alt="Molecular Structure"
                                       onLoadStart={() => setViewLoading(true)}
                                       onLoad={() => setViewLoading(false)}
                                       onError={() => setViewLoading(false)}
                                       style={{
-                                        maxWidth: '100%',
-                                        maxHeight: '100%',
+                                        maxWidth: '90%',
+                                        maxHeight: '90%',
+                                        width: 'auto',
+                                        height: 'auto',
                                         objectFit: 'contain',
-                                        display: 'block'
+                                        display: 'block',
+                                        filter: 'drop-shadow(0 0 10px rgba(0,0,0,0.2))'
                                       }}
                                     />
                                   </div>
