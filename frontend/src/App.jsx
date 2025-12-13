@@ -2,18 +2,18 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import axios from 'axios';
 
-// 1. ICONS (Yahan 'Radar' icon hai)
+// 1. ICONS
 import { 
   Hexagon, Home, Info, Settings, List, ArrowUpDown, X, RefreshCw, 
   Dna, Atom, Upload, Database, Search, Zap, Activity, ShieldCheck, 
   Dna as DnaIcon, Download as DownloadIcon, Brain, Magnet, FlaskConical, 
-  Box, Radar, Table // <--- Ye Icon hai
+  Box, Radar, Table
 } from 'lucide-react';
 
-// 2. CHARTS (Yahan 'Radar' ko rename karke 'RechartsRadar' banaya hai)
+// 2. CHARTS
 import { 
   ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, 
-  PolarRadiusAxis, Radar as RechartsRadar, Tooltip // <--- YEH ZAROORI HAI
+  PolarRadiusAxis, Radar as RechartsRadar, Tooltip
 } from 'recharts';
 
 import jsPDF from 'jspdf';
@@ -22,14 +22,15 @@ import InteractiveImage from './components/InteractiveImage';
 import Viewer3D from './components/Viewer3D';
 import ResultCard from './components/ResultCard';
 import Sidebar from './components/Sidebar';
+import Toast from './components/Toast';
 import "./styles/index.css";
 
 
 /**
  * App.jsx
- * - This file wires components together.
- * - I kept your original state names & API calls so behaviour is identical.
- * - Minor reformatting + comments only.
+ * - Integrated Toast for notifications.
+ * - Added Error Boundary concept (via try-catch and Toast).
+ * - Improved input validation trimming.
  */
 
 function App() {
@@ -43,6 +44,9 @@ function App() {
   const [batchResults, setBatchResults] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
   const [showAbout, setShowAbout] = useState(false);
+
+  // Toast State
+  const [toast, setToast] = useState(null); // { message, type }
 
   // view & viz
   const [resultView, setResultView] = useState('visualization');
@@ -59,23 +63,25 @@ function App() {
   const viewerRef = useRef(null);
   const [selectedFile, setSelectedFile] = useState(null);
 
+  const showToast = (message, type = 'info') => {
+    setToast({ message, type });
+  };
+
   // --- 3D render callback (used by Viewer3D too) ---
   const render3D = useCallback((element, bgColor) => {
-    // We keep same behavior as before; Viewer3D also handles rendering
     if (!element) return;
     setViewLoading(true);
     element.innerHTML = '';
     const config = { backgroundColor: bgColor };
     const viewer = window.$3Dmol?.createViewer ? window.$3Dmol.createViewer(element, config) : null;
     if (!viewer) {
-      // Fallback: if 3dmol not global, Viewer3D component will manage it
       setViewLoading(false);
       return;
     }
     if (element === mainViewerRef.current) viewerRef.current = viewer;
 
-    const pdbId = target || '6LU7';
-    const ligandSmiles = smiles;
+    const pdbId = target ? target.trim() : '6LU7';
+    const ligandSmiles = smiles ? smiles.trim() : '';
 
     const safetyTimeout = setTimeout(() => setViewLoading(false), 5000);
 
@@ -104,6 +110,7 @@ function App() {
         viewer.render();
       } catch (e) {
         console.error('3D error (App):', e);
+        showToast("Error rendering 3D structure", "error");
       } finally {
         setViewLoading(false);
       }
@@ -138,7 +145,6 @@ function App() {
     return () => clearTimeout(t);
   }, [style3D, smiles]);
 
-  // effect: render 3D when result available (same logic)
   useEffect(() => {
     let renderTimeout;
     if (resultView === 'visualization' && vizMode === '3D' && result && !isFullscreen) {
@@ -174,8 +180,6 @@ function App() {
     }
   }, [isFullscreen, vizMode, render3D]);
 
-  // ------------------------
-  // Helper data functions - same as original
   const generateGraphData = (score) => {
     return [
       { subject: 'Binding Affinity', A: Math.floor(score * 10), fullMark: 100, val: (Math.random() * 2 + 7).toFixed(1) },
@@ -217,8 +221,6 @@ function App() {
     });
   };
 
-  // ------------------------
-  // API / user handlers (kept same)
   const handleDownload = async () => {
     if (!cardRef.current) return;
     const btn = cardRef.current.querySelector('.download-btn');
@@ -230,9 +232,10 @@ function App() {
       const printHeight = (pdfWidth * 0.6);
       pdf.addImage(dataUrl, 'PNG', 0, 10, pdfWidth, printHeight);
       pdf.save(`BioGraph_Report.pdf`);
+      showToast("Report generated successfully!", "success");
     } catch (error) {
       console.error("Error generating report:", error);
-      alert("Error generating report. Check console for details.");
+      showToast("Error generating report. Check console.", "error");
     } finally {
       if (btn) btn.style.display = 'flex';
     }
@@ -264,16 +267,19 @@ function App() {
   };
 
   const handleScan = async () => {
-    if (!target) {
-      alert("⚠️ Please enter a Target Protein ID (PDB)!");
+    const safeTarget = target ? target.trim() : '';
+    const safeSmiles = smiles ? smiles.trim() : '';
+
+    if (!safeTarget) {
+      showToast("Please enter a Target Protein ID (PDB)!", "error");
       return;
     }
-    if (activeTab === 'manual' && !smiles) {
-      alert("⚠️ Please enter a valid SMILES structure!");
+    if (activeTab === 'manual' && !safeSmiles) {
+      showToast("Please enter a valid SMILES structure!", "error");
       return;
     }
     if (activeTab === 'upload' && !selectedFile) {
-      alert("⚠️ Please select a file to upload!");
+      showToast("Please select a file to upload!", "error");
       return;
     }
 
@@ -288,13 +294,13 @@ function App() {
     try {
       if (activeTab === 'manual') {
         const response = await axios.post(`${API_BASE}/analyze`, {
-          target_id: target,
-          smiles: smiles,
+          target_id: safeTarget,
+          smiles: safeSmiles,
           mode: 'manual'
         });
 
         if (response.data.error) {
-          alert(`❌ Error: ${response.data.error}`);
+          showToast(`Error: ${response.data.error}`, "error");
           setLoading(false);
           return;
         }
@@ -306,51 +312,54 @@ function App() {
           color: response.data.color,
           graph: response.data.graph,
           name: 'Manual Ligand',
-          smiles: smiles
+          smiles: safeSmiles
         });
+        showToast("Analysis Complete", "success");
 
       } else if (activeTab === 'auto') {
         const response = await axios.post(`${API_BASE}/analyze`, {
-          target_id: target,
+          target_id: safeTarget,
           mode: 'auto'
         });
 
         if (response.data.error) {
-          alert(`❌ Error: ${response.data.error}`);
+          showToast(`Error: ${response.data.error}`, "error");
           setLoading(false);
           return;
         }
 
         setBatchResults(response.data.results);
+        showToast(`Found ${response.data.results.length} candidates`, "success");
 
       } else if (activeTab === 'upload') {
         const formData = new FormData();
         formData.append('file', selectedFile);
-        formData.append('target_id', target);
+        formData.append('target_id', safeTarget);
 
         const response = await axios.post(`${API_BASE}/upload`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
 
         if (response.data.error) {
-          alert(`❌ Error: ${response.data.error}`);
+          showToast(`Error: ${response.data.error}`, "error");
           setLoading(false);
           return;
         }
 
         setBatchResults(response.data.results);
+        showToast(`Processed ${response.data.results.length} entries`, "success");
       }
 
     } catch (error) {
       console.error('API Error:', error);
       if (error.code === 'ERR_NETWORK' || error.message.includes('Network Error')) {
-        alert('🔌 Backend server is not running!\n\nPlease start the backend:\ncd backend\nuvicorn main:app --reload --port 8000');
+        showToast('Backend server is unreachable!', "error");
       } else if (error.response?.status === 404) {
-        alert('❌ API endpoint not found. Please check backend configuration.');
+        showToast('API endpoint not found.', "error");
       } else if (error.response?.data?.error) {
-        alert(`❌ ${error.response.data.error}`);
+        showToast(error.response.data.error, "error");
       } else {
-        alert(`❌ Unexpected error: ${error.message}`);
+        showToast(`Unexpected error: ${error.message}`, "error");
       }
     } finally {
       setLoading(false);
@@ -359,10 +368,10 @@ function App() {
 
   const metricsForTable = getMetricsTableData();
 
-  // ------------------------
-  // Render (unchanged visuals, but using our small components)
   return (
     <div className="app-container">
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+
       <div className="bg-grid" style={{ pointerEvents: 'none' }}></div>
 
       {isFullscreen && (
@@ -382,7 +391,6 @@ function App() {
           <div className="glass-logo-container"><Hexagon size={28} color="#00f3ff" fill="rgba(0, 243, 255, 0.3)" strokeWidth={2} /></div>
           <div className="brand-text">BioGraph <span style={{ color: '#00f3ff' }}>AI</span></div>
         </div>
-        {/* --- NEW: CENTER TEXT ADDED HERE --- */}
         <div className="nav-center-text">Next-Generation Drug Discovery</div>
         <div className="nav-right">
           <div className={`nav-link ${!showAbout ? 'active-btn' : ''}`} onClick={() => setShowAbout(false)}><Home size={18} /><span>Home</span></div>
@@ -394,7 +402,6 @@ function App() {
       <div className={`slider-container ${showAbout ? 'slide-active' : ''}`}>
         <div className="page-section" style={{ position: 'relative' }}>
           <div className="main-layout">
-            {/* Left sidebar (extracted component) */}
             <Sidebar
               activeTab={activeTab}
               setActiveTab={handleTabChange}
@@ -409,7 +416,6 @@ function App() {
               loading={loading}
             />
 
-            {/* Right panel (main visualization + lists) */}
             <div className="glass-panel panel-right" style={{ zIndex: 50 }}>
               <div style={{
                 height: '60px',
@@ -423,7 +429,6 @@ function App() {
               }}>
                 <div className="header-badge" style={{ margin: 0, padding: '12px 15px' }}>
                   
-                  {/* --- 1. DESKTOP VIEW (Full Details) --- */}
                   <div className="status-desktop">
                     <Activity size={14} color="#00f3ff" className={loading ? "animate-pulse" : ""} />
                     <span className="badge-text" style={{ marginLeft: '8px' }}>
@@ -433,9 +438,7 @@ function App() {
                     </span>
                   </div>
 
-                  {/* --- 2. MOBILE VIEW (Only "SYSTEM" + Lights) --- */}
                   <div className="status-mobile">
-                    {/* Yahan sirf 'SYSTEM' likha hai, agay koi status variable nahi lagaya */}
                     <span className="badge-text" style={{ fontSize: '10px' }}>SYSTEM
                     </span>
                     
@@ -464,7 +467,7 @@ function App() {
                         key={tab.id}
                         onClick={() => setResultView(tab.id)}
                         className={`nav-link ${resultView === tab.id ? 'active-btn' : ''}`}
-                        title={tab.label} // Mobile par press hold karne par naam dikhega
+                        title={tab.label}
                         style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}
                       >
                         {tab.icon}
@@ -629,7 +632,6 @@ function App() {
           {result && <ResultCard result={result} cardRef={cardRef} onDownload={handleDownload} />}
         </div>
 
-        {/* About page */}
         <div className="page-section" style={{ pointerEvents: 'auto' }}>
           <div className="about-page-content">
             <div className="hologram-inner" style={{ marginBottom: '30px', height: '150px' }}><div className="dna-spinner"><Hexagon size={80} color="#00f3ff" fill="rgba(0, 243, 255, 0.3)" strokeWidth={2} /></div></div>
@@ -637,7 +639,6 @@ function App() {
             <div className="about-hero-subtitle">Next-Generation Drug Discovery</div>
            <div className="features-grid">
               
-              {/* Card 1: GNN (Brain Icon) */}
               <div className="feature-card">
                 <div className="f-icon">
                   <Brain size={30} />
@@ -648,7 +649,6 @@ function App() {
                 </div>
               </div>
 
-              {/* Card 2: Binding (Magnet Icon) */}
               <div className="feature-card">
                 <div className="f-icon">
                   <Magnet size={30} style={{ transform: 'rotate(45deg)' }} />
@@ -659,7 +659,6 @@ function App() {
                 </div>
               </div>
 
-              {/* Card 3: ADMET (Shield Icon) */}
               <div className="feature-card">
                 <div className="f-icon">
                   <ShieldCheck size={30} />
@@ -670,7 +669,6 @@ function App() {
                 </div>
               </div>
 
-              {/* Card 4: Visualization (Atom Icon) */}
               <div className="feature-card">
                 <div className="f-icon">
                   <Atom size={30} />
@@ -681,7 +679,6 @@ function App() {
                 </div>
               </div>
 
-              {/* Card 5: Repurposing (Refresh Icon) */}
               <div className="feature-card">
                 <div className="f-icon">
                   <RefreshCw size={30} />
@@ -692,7 +689,6 @@ function App() {
                 </div>
               </div>
 
-              {/* Card 6: Analytics (Activity Icon) */}
               <div className="feature-card">
                 <div className="f-icon">
                   <Activity size={30} />
