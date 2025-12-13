@@ -25,22 +25,92 @@
 
   .main-layout { flex-direction:column; height:auto !important; margin-top:0; padding:10px; padding-bottom:50px; overflow:visible; align-items:center; }
   .panel-left { flex:none; width:90%; margin-bottom:20px; }
-  .panel-right { flex:none; width:94%; height:auto !important; min-height:600px; overflow:visible !important; background: rgba(0,0,0,0.2); display:flex; flex-direction:column; padding:15px !important; padding-bottom:20px !important; align-items:center; top:-20px !important; left:0 !important; }
+  .panel-right { flex:none; width:94%; height:200px !important; min-height:600px; overflow:visible !important; background: rgba(0,0,0,0.2); display:flex; flex-direction:column; padding:15px !important; padding-bottom:20px !important; align-items:center; top:-30px !important; left:0 !important; }
 
-  .hologram-wrapper { margin-top:40px !important; height:auto !important; min-height:350px; position:relative; display:flex; flex-direction:column; justify-content:flex-start; width:100%; }
+  .hologram-wrapper { margin-top:150px !important; height:100% !important; min-height:400px; position:relative; display:flex; flex-direction:column; justify-content:flex-start; width:100%; }
   .result-container-flex { height:auto !important; width:100%; margin-bottom:30px; }
   .result-content-row { flex-direction:column; width:100%; gap:20px; align-items:center; }
 
   .structure-box:first-child { width:100% !important; height:auto !important; min-height:200px; }
   .structure-box:last-child { width:100% !important; height:300px !important; min-height:300px !important; background: rgba(0,0,0,0.6) !important; }
 
-  .result-card { position:relative !important; bottom:40px !important; left:0 !important; right:0 !important; display:flex; flex-direction:column !important; gap:10px; text-align:center; margin:0 auto !important; width:90% !important; padding:20px 10px; background: rgba(15,15,20,0.95); z-index:50; box-sizing:border-box; transform:none !important; }
+  .result-card { position:relative !important; bottom:65px !important; left:0 !important; right:0 !important; display:flex; flex-direction:column !important; gap:10px; text-align:center; margin:0 auto !important; width:90% !important; padding:20px 10px; background: rgba(15,15,20,0.95); z-index:50; box-sizing:border-box; transform:none !important; }
   .score-section { flex-direction:column; gap:10px; width:100%; align-items:center; }
   .score-val { font-size:32px !important; }
   .status-val { font-size:20px !important; }
   .vertical-div { width:100%; height:1px; background: rgba(255,255,255,0.1); margin:10px 0; }
   .metrics-container { width:100%; justify-content:center; margin-right:0; gap:15px; flex-wrap:wrap; }
 
-  .about-page-content { padding:20px; margin-top:0; width:95%; box-sizing:border-box; }
+  .about-page-content { padding:20px; width:95%; box-sizing:border-box; }
   .about-hero-title { font-size:32px; }
+
+  /* --- RADAR CHART HEIGHT FIX --- */
+  /* --- STUDIO MOBILE POSITIONING --- */
+  .pro-studio-container {
+    height: 550px !important;
+    width: 100% !important;
+    display: flex;
+    flex-direction: column;
+    
+    /* --- YAHAN SE UPER/NEECHAY ADJUST KAREIN --- */
+    margin-top: -130px;     /* Value barhayen taake Studio NEECHAY aye (e.g. 50px) */
+                          /* Agar UPER le jana hai to negative value dein (e.g. -20px) */
+    
+    margin-bottom: 0px;  /* Neechay se gap */
+  }
+
+  /* Agar Radar Chart ka wrapper bhi collapse ho raha ho */
+  .recharts-responsive-container {
+    min-height: 400px !important;
+  }
+}
+/* --- MOBILE BUTTONS: SYMBOLS ONLY --- */
+@media (max-width: 768px) {
+  /* Text ko chupana */
+  .mobile-hide-text, .desktop-text {
+    display: none !important;
+  }
+  
+  /* Buttons ko chota aur compact banana */
+  .nav-link {
+    padding: 10px !important; /* Text hata diya to padding kam ki */
+    min-width: 40px;          /* Square shape ke qareeb */
+    justify-content: center !important;
+  }
+
+  /* Back Button adjustment */
+  .nav-link svg {
+    margin: 0 !important;
+  }
+}
+
+/* --- MOBILE SYSTEM BADGE FIX --- */
+@media (max-width: 768px) {
+  /* 1. Badge ka size chota karein */
+  .header-badge {
+    padding: 4px 8px !important;   /* Padding kam ki */
+    gap: 4px !important;           /* Icon aur text ka faasla kam */
+    border-radius: 12px !important;
+    background: rgba(0, 243, 255, 0.05) !important; /* Thora halka background */
+  }
+
+  /* 2. "SYSTEM:" Lafz ko chupana (Magic Trick 🎩) */
+  /* Hum font-size 0 kar denge taake "SYSTEM:" gayab ho jaye */
+  .badge-text {
+    font-size: 0 !important; 
+  }
+
+  /* 3. Sirf Status (ONLINE/IDLE) ko wapis dikhana */
+  /* Kyunke ye span ke andar hai, isay wapis font size denge */
+  .badge-text span {
+    font-size: 10px !important;
+    font-weight: 800;
+    letter-spacing: 1px;
+  }
+  
+  /* 4. Icon size adjust */
+  .header-badge svg {
+    width: 12px !important;
+    height: 12px !important;
+  }
 }

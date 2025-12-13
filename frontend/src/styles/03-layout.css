@@ -42,7 +42,226 @@
 /* Slider / pages layout */
 .slider-container { display:flex; width:200vw; height:100vh; transition: transform 0.8s cubic-bezier(0.22,1,0.36,1); position:relative; z-index:10; }
 .slide-active { transform: translateX(-100vw); }
-.page-section { width:100vw; height:100vh; position:relative; overflow:hidden; }
+.page-section { width:100vw; height:100vh; position:relative; /* Yeh line change karein 'hidden' se 'auto' par */
+  overflow-y: auto;  /* Taake agar content bara ho to scroll ho sakay */
+  overflow-x: hidden; }
 .main-layout {
   position: relative; z-index:10; display:flex; height:calc(100vh - 100px); margin-top:90px; padding:0 20px 20px 20px; gap:20px; box-sizing:border-box;
+}
+
+/* --- ABOUT PAGE MAIN GLASS CONTAINER --- */
+.about-page-content {
+  /* Layout & Positioning */
+  position: relative;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  /* Size & Spacing */
+  width: 85%;
+  max-width: 1200px;
+  
+  /* --- IMPORTANT FIX --- */
+  height: 100%;           /* Card sirf utna lamba hoga jitna content hai */
+  min-height: 70vh;       /* 70vh hata diya taake zabardasti khinche nahi */
+
+  /* --- GAP ADJUSTMENT --- */
+  margin-top: 90px;      /* Upar se gap (Navbar ke liye) */
+  margin-bottom: 20px;    /* Neechay se gap (Ab ye apply hoga) */
+  margin-left: auto;
+  margin-right: auto;
+
+  padding: 60px 40px;
+  border-radius: 30px;
+  /* --- GLASSMORPHISM MAGIC --- */
+  background: linear-gradient(
+    135deg, 
+    rgba(20, 20, 25, 0.7), 
+    rgba(5, 5, 8, 0.8)
+  );
+  -webkit-backdrop-filter: blur(1px);         /* Peechay ka background dhundla hoga */
+  backdrop-filter: blur(1px); /* Safari support ke liye */
+  
+  /* Border & Glow (Premium Feel) */
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 
+    0 20px 50px rgba(0, 0, 0, 0.6),    /* Gehra saya (Shadow) */
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05); /* Anderuni chamak */
+    
+  transition: transform 0.3s ease;
+}
+
+/* Thora sa hover effect agar user card par mouse laye */
+.about-page-content:hover {
+  border-color: rgba(0, 243, 255, 0.2);
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.7),
+    0 0 30px rgba(0, 243, 255, 0.05);
+}
+
+/* --- FEATURES GRID STYLING (Layout: Original | Visuals: Upgraded) --- */
+
+.features-grid {
+  /* Layout wohi purana */
+  display: flex;
+  gap: 30px;
+  max-width: 1000px;
+  width: 90%;
+  justify-content: center;
+  flex-wrap: wrap;
+  perspective: 1000px; /* 3D effect maintained */
+  margin-top: 20px;    /* Original spacing */
+}
+
+.feature-card {
+  /* Size & Shape (Original) */
+  width: 260px;
+  padding: 30px 20px;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  position: relative;
+  overflow: hidden;
+
+  /* Glass Visuals (Merged) */
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  
+  /* Smooth Animation */
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* --- HOVER EFFECTS (Add kiye hain) --- */
+.feature-card:hover {
+  transform: translateY(-10px) scale(1.02);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--neon-cyan);
+  box-shadow: 0 10px 40px rgba(0, 243, 255, 0.15);
+}
+
+/* Shine Animation */
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+  transform: translateX(-100%);
+  transition: 0.5s;
+}
+.feature-card:hover::before {
+  transform: translateX(100%);
+}
+
+/* --- ICONS STYLING (Logos ke liye zaroori changes) --- */
+.f-icon {
+  /* Colors & Shape */
+  color: var(--neon-cyan);
+  background: rgba(0, 243, 255, 0.05);
+  padding: 18px;
+  border-radius: 50%;
+  margin-bottom: 10px;
+  border: 1px solid rgba(0, 243, 255, 0.1);
+  transition: 0.3s;
+
+  /* Center Alignment (New Logos ke liye zaroori) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.feature-card:hover .f-icon {
+  background: rgba(0, 243, 255, 0.15);
+  box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+  transform: rotateY(180deg);
+}
+
+/* --- TEXT STYLING (Original) --- */
+.f-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.f-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  opacity: 0.8;
+  text-align: center;
+}
+
+/* --- UPDATED: Hero Subtitle (Beautiful & Responsive) --- */
+.about-hero-subtitle {
+  /* Text Size & Spacing */
+  font-size: 18px; 
+  font-weight: 700;          /* Thora mota (Bold) kiya */
+  letter-spacing: 6px;       /* Spacing barhayi "Cinematic" look ke liye */
+  text-transform: uppercase;
+  margin-bottom: 50px;
+  position: relative;
+  display: inline-block;
+
+  /* --- BEAUTY: Gradient Text Effect --- */
+  background: linear-gradient(90deg, #ffffff, #00f3ff, #bc13fe, #ffffff);
+  background-size: 300% 100%; /* Gradient ko bara kiya taake move ho sakay */
+  -webkit-background-clip: text;
+  background-clip: text;      /* Color sirf text pe apply hoga */
+  color: transparent;         /* Asli color chupaya */
+
+  /* --- GLOW --- */
+  filter: drop-shadow(0 0 8px rgba(0, 243, 255, 0.4));
+  
+  /* --- ANIMATION: Moving Shine --- */
+  animation: textShine 6s linear infinite;
+}
+
+/* Animation Keyframes (Agar pehle nahi hain to add karein) */
+@keyframes textShine {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+/* --- MOBILE RESPONSIVENESS (Fixed: Card Position) --- */
+@media (max-width: 768px) {
+  .about-page-content {
+    width: 95%;              /* Card screen par phaila hua */
+    padding: 30px 15px;      /* Anderuni gap thora kam */
+
+    /* --- YEH SETTING CHANGE KAREIN --- */
+    margin-top: 10px;       /* Navbar (80px) + Gap (40px) = 120px */
+    margin-bottom: 10px;     /* Neechay se gap */
+    
+    margin-left: auto;       /* Center karne ke liye */
+    margin-right: auto;      /* Center karne ke liye */
+    height: auto;            /* Height content ke hisaab se */
+  }
+
+  .about-hero-subtitle {
+    font-size: 13px;         /* Mobile par size chota */
+    letter-spacing: 2px;     /* Spacing kam taake screen se bahar na jaye */
+    margin-bottom: 30px;     /* Gap kam kiya */
+    font-weight: 600;
+    
+    /* Mobile par glow thora kam */
+    filter: drop-shadow(0 0 3px rgba(0, 243, 255, 0.3));
+  }
+
+  /* Grid Stack - Mobile par cards ek ke neeche ek */
+  .features-grid {
+    gap: 20px;
+    justify-content: center;
+  }
+  
+  .feature-card {
+    width: 100%;             /* Mobile pe full width */
+    max-width: 340px;        /* Lekin hadd se zyada bara na ho */
+  }
 }

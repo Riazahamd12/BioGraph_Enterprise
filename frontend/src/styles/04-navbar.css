@@ -18,3 +18,92 @@
 }
 .nav-link:hover { color:#050505; background:var(--neon-cyan); border-color:var(--neon-cyan); box-shadow:0 0 15px var(--neon-cyan); }
 .nav-link.active-btn { background:var(--neon-cyan); color:#000; border-color:var(--neon-cyan); box-shadow:0 0 15px var(--neon-cyan); }
+
+/* --- CENTER TEXT STYLING (Same as About Page) --- */
+.nav-center-text {
+  position: absolute;       /* Center karne ke liye zaroori */
+  left: 50%;
+  transform: translateX(-50%);
+  
+  font-size: 14px;          /* Navbar ke liye size thora chota kiya */
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  white-space: nowrap;      /* Text toote nahi */
+
+  /* --- GRADIENT & SHINE EFFECT --- */
+  background: linear-gradient(90deg, #ffffff, #00f3ff, #bc13fe, #ffffff);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  
+  filter: drop-shadow(0 0 5px rgba(0, 243, 255, 0.4));
+  animation: textShine 6s linear infinite; /* Wahi animation use hogi */
+}
+
+/* Mobile par chupana behtar hai taake Navbar crowded na ho */
+@media (max-width: 1024px) {
+  .nav-center-text {
+    display: none;
+  }
+}
+
+/* --- HEXAGON SHINE & GLOW EFFECTS --- */
+
+/* 1. Container ko thora upgrade karein */
+.glass-logo-container {
+  position: relative;
+  overflow: hidden; /* Shine effect ko container ke andar rakhne ke liye */
+  border-color: var(--neon-cyan) !important; /* Border ko bright kiya */
+  box-shadow: 0 0 20px rgba(0, 243, 255, 0.4) !important; /* Glow barhaya */
+  transition: all 0.3s ease;
+}
+
+/* 2. Hexagon Icon (SVG) ko Glow aur Pulse dein */
+.glass-logo-container svg {
+  filter: drop-shadow(0 0 8px var(--neon-cyan)); /* Neon Glow */
+  animation: hexPulse 3s infinite alternate ease-in-out; /* Saans lene wala effect */
+}
+
+/* 3. Hover par tez glow */
+.brand-identity:hover .glass-logo-container {
+  box-shadow: 0 0 40px rgba(0, 243, 255, 0.8) !important;
+  transform: rotate(180deg); /* Hover pe ghoom jaye */
+  border-color: #fff !important;
+}
+
+/* --- ANIMATIONS --- */
+
+/* Dheere Dheere Glow hona */
+@keyframes hexPulse {
+  0% { 
+    filter: drop-shadow(0 0 5px var(--neon-cyan)); 
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  100% { 
+    filter: drop-shadow(0 0 25px var(--neon-cyan)); 
+    transform: scale(1.1); /* Thora sa bara ho */
+    opacity: 1;
+  }
+}
+
+/* 4. Ek "Light Reflection" (Shine) jo guzre gi */
+.glass-logo-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+  transform: skewX(-20deg);
+  animation: shinePass 2s infinite linear;
+}
+
+@keyframes shinePass {
+  0% { left: -150%; }
+  20% { left: 150%; } /* Tezi se guzre */
+  100% { left: 150%; } /* Baaki time wait kare */
+}

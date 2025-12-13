@@ -1,7 +1,21 @@
+/* --- IMPORTS --- */
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import axios from 'axios';
-import { Hexagon, Home, Info, Settings, List, ArrowUpDown, X, RefreshCw, Dna, Atom, Upload, Database, Search, Zap, Activity, ShieldCheck, Dna as DnaIcon, Download as DownloadIcon } from 'lucide-react';
-import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar as RechartsRadar, Tooltip } from 'recharts';
+
+// 1. ICONS (Yahan 'Radar' icon hai)
+import { 
+  Hexagon, Home, Info, Settings, List, ArrowUpDown, X, RefreshCw, 
+  Dna, Atom, Upload, Database, Search, Zap, Activity, ShieldCheck, 
+  Dna as DnaIcon, Download as DownloadIcon, Brain, Magnet, FlaskConical, 
+  Box, Radar, Table // <--- Ye Icon hai
+} from 'lucide-react';
+
+// 2. CHARTS (Yahan 'Radar' ko rename karke 'RechartsRadar' banaya hai)
+import { 
+  ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, 
+  PolarRadiusAxis, Radar as RechartsRadar, Tooltip // <--- YEH ZAROORI HAI
+} from 'recharts';
+
 import jsPDF from 'jspdf';
 import { toPng } from 'html-to-image';
 import InteractiveImage from './components/InteractiveImage';
@@ -9,7 +23,6 @@ import Viewer3D from './components/Viewer3D';
 import ResultCard from './components/ResultCard';
 import Sidebar from './components/Sidebar';
 import "./styles/index.css";
-
 
 
 /**
@@ -20,6 +33,7 @@ import "./styles/index.css";
  */
 
 function App() {
+
   // --- core app state (same as your original) ---
   const [activeTab, setActiveTab] = useState('manual');
   const [target, setTarget] = useState('');
@@ -368,10 +382,12 @@ function App() {
           <div className="glass-logo-container"><Hexagon size={28} color="#00f3ff" fill="rgba(0, 243, 255, 0.3)" strokeWidth={2} /></div>
           <div className="brand-text">BioGraph <span style={{ color: '#00f3ff' }}>AI</span></div>
         </div>
+        {/* --- NEW: CENTER TEXT ADDED HERE --- */}
+        <div className="nav-center-text">Next-Generation Drug Discovery</div>
         <div className="nav-right">
           <div className={`nav-link ${!showAbout ? 'active-btn' : ''}`} onClick={() => setShowAbout(false)}><Home size={18} /><span>Home</span></div>
           <div className={`nav-link ${showAbout ? 'active-btn' : ''}`} onClick={() => setShowAbout(!showAbout)}><Info size={18} /><span>About</span></div>
-          <div className="nav-link"><Settings size={18} /><span>Config</span></div>
+          <div className="nav-link"><Settings size={18} /><span>Settings</span></div>
         </div>
       </nav>
 
@@ -397,7 +413,7 @@ function App() {
             <div className="glass-panel panel-right" style={{ zIndex: 50 }}>
               <div style={{
                 height: '60px',
-                background: 'rgba(0,0,0,0.3)',
+                background: 'rgba(0,0,0,0)',
                 borderBottom: '1px solid rgba(255,255,255,0.1)',
                 display: 'flex',
                 alignItems: 'center',
@@ -405,29 +421,54 @@ function App() {
                 padding: '0 20px',
                 gap: '20px'
               }}>
-                <div className="header-badge" style={{ margin: 0 }}>
-                  <Activity size={14} color="#00f3ff" className={loading ? "animate-pulse" : ""} />
-                  <span className="badge-text">SYSTEM: <span style={{ color: loading ? '#00f3ff' : '#fff' }}>{loading ? "BUSY" : (result || batchResults.length > 0 ? "ONLINE" : "IDLE")}</span></span>
+                <div className="header-badge" style={{ margin: 0, padding: '12px 15px' }}>
+                  
+                  {/* --- 1. DESKTOP VIEW (Full Details) --- */}
+                  <div className="status-desktop">
+                    <Activity size={14} color="#00f3ff" className={loading ? "animate-pulse" : ""} />
+                    <span className="badge-text" style={{ marginLeft: '8px' }}>
+                      SYSTEM: <span style={{ color: loading ? '#00f3ff' : '#fff' }}>
+                        {loading ? "BUSY" : (result || batchResults.length > 0 ? "OPERATION COMPLETED SUCCESSFULLY" : "IDLE")}
+                      </span>
+                    </span>
+                  </div>
+
+                  {/* --- 2. MOBILE VIEW (Only "SYSTEM" + Lights) --- */}
+                  <div className="status-mobile">
+                    {/* Yahan sirf 'SYSTEM' likha hai, agay koi status variable nahi lagaya */}
+                    <span className="badge-text" style={{ fontSize: '10px' }}>SYSTEM
+                    </span>
+                    
+                    <div className="status-lights">
+                      <div className={`light red ${!loading && !result && batchResults.length === 0 ? 'active' : ''}`}></div>
+                      <div className={`light blue ${loading ? 'active animate-pulse' : ''}`}></div>
+                      <div className={`light green ${!loading && (result || batchResults.length > 0) ? 'active' : ''}`}></div>
+                    </div>
+                  </div>
+
                 </div>
 
                 {result && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     {activeTab !== 'manual' && (
                       <button onClick={() => setResult(null)} className="nav-link" style={{ marginRight: '10px', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                        <List size={16} /> Back to List
+                        <List size={16} /> <span className="desktop-text">Back</span>
                       </button>
                     )}
                     {[
-                      { label: 'Studio', id: 'visualization' },
-                      { label: 'Radar', id: 'radar' },
-                      { label: 'InfoTable', id: 'infotable' }
+                      { label: 'Studio', id: 'visualization', icon: <Box size={16} /> },
+                      { label: 'Radar', id: 'radar', icon: <Radar size={16} /> },
+                      { label: 'InfoTable', id: 'infotable', icon: <Table size={16} /> }
                     ].map(tab => (
                       <button
                         key={tab.id}
                         onClick={() => setResultView(tab.id)}
                         className={`nav-link ${resultView === tab.id ? 'active-btn' : ''}`}
+                        title={tab.label} // Mobile par press hold karne par naam dikhega
+                        style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}
                       >
-                        {tab.label}
+                        {tab.icon}
+                        <span className="mobile-hide-text">{tab.label}</span>
                       </button>
                     ))}
                   </div>
@@ -594,10 +635,74 @@ function App() {
             <div className="hologram-inner" style={{ marginBottom: '30px', height: '150px' }}><div className="dna-spinner"><Hexagon size={80} color="#00f3ff" fill="rgba(0, 243, 255, 0.3)" strokeWidth={2} /></div></div>
             <div className="brand-text">BioGraph <span style={{ color: '#00f3ff' }}>AI</span></div> <div><br /></div>
             <div className="about-hero-subtitle">Next-Generation Drug Discovery</div>
-            <div className="features-grid">
-              <div className="feature-card"><div className="f-icon"><DnaIcon size={30} /></div><div className="f-title">Graph Neural Networks</div><div className="f-desc">Utilizing advanced GNNs to predict molecular interactions with high accuracy.</div></div>
-              <div className="feature-card"><div className="f-icon"><DnaIcon size={30} /></div><div className="f-title">Binding Affinity</div><div className="f-desc">Calculates the strength of interactions between protein targets and ligands.</div></div>
-              <div className="feature-card"><div className="f-icon"><DnaIcon size={30} /></div><div className="f-title">ADMET Profiling</div><div className="f-desc">Instant analysis of Toxicity, Solubility, and Drug-likeness properties.</div></div>
+           <div className="features-grid">
+              
+              {/* Card 1: GNN (Brain Icon) */}
+              <div className="feature-card">
+                <div className="f-icon">
+                  <Brain size={30} />
+                </div>
+                <div className="f-title">AI-Driven GNNs</div>
+                <div className="f-desc">
+                  Advanced Graph Neural Networks (GNNs) analyze molecular graphs to predict drug-target interactions with state-of-the-art accuracy.
+                </div>
+              </div>
+
+              {/* Card 2: Binding (Magnet Icon) */}
+              <div className="feature-card">
+                <div className="f-icon">
+                  <Magnet size={30} style={{ transform: 'rotate(45deg)' }} />
+                </div>
+                <div className="f-title">Binding Affinity</div>
+                <div className="f-desc">
+                  Quantifies the binding strength (Kd/Ki) between ligands and protein pockets, simulating molecular docking to find potent inhibitors.
+                </div>
+              </div>
+
+              {/* Card 3: ADMET (Shield Icon) */}
+              <div className="feature-card">
+                <div className="f-icon">
+                  <ShieldCheck size={30} />
+                </div>
+                <div className="f-title">ADMET & Safety</div>
+                <div className="f-desc">
+                  Comprehensive profiling of Absorption, Toxicity, and Drug-Likeness (QED, Lipinski Rule) to ensure clinical safety.
+                </div>
+              </div>
+
+              {/* Card 4: Visualization (Atom Icon) */}
+              <div className="feature-card">
+                <div className="f-icon">
+                  <Atom size={30} />
+                </div>
+                <div className="f-title">3D Visualization</div>
+                <div className="f-desc">
+                  Interactive 3D molecular rendering engine to inspect chemical structures, binding pockets, and confirmations in real-time.
+                </div>
+              </div>
+
+              {/* Card 5: Repurposing (Refresh Icon) */}
+              <div className="feature-card">
+                <div className="f-icon">
+                  <RefreshCw size={30} />
+                </div>
+                <div className="f-title">Drug Repurposing</div>
+                <div className="f-desc">
+                  Screening libraries of existing FDA-approved drugs to identify novel therapeutic uses, accelerating the discovery timeline.
+                </div>
+              </div>
+
+              {/* Card 6: Analytics (Activity Icon) */}
+              <div className="feature-card">
+                <div className="f-icon">
+                  <Activity size={30} />
+                </div>
+                <div className="f-title">Smart Analytics</div>
+                <div className="f-desc">
+                  Instant graphical analysis using Radar Charts to visualize multi-parameter optimization scores and molecular properties.
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
