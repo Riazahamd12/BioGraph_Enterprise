@@ -11,7 +11,8 @@ import requests
 
 # --- RDKit IMPORTS ---
 from rdkit import Chem
-from rdkit.Chem import Descriptors, QED, Draw
+from rdkit.Chem import Descriptors, QED
+from rdkit.Chem.Draw import rdMolDraw2D
 
 app = FastAPI()
 
@@ -73,10 +74,15 @@ def get_image(smiles: str):
         if not mol:
             return Response(status_code=404)
 
-        img = Draw.MolToImage(mol, size=(1000, 1000))
-        img_byte_arr = io.BytesIO()
-        img.save(img_byte_arr, format='PNG')
-        img_byte_arr = img_byte_arr.getvalue()
+        # Use MolDraw2DCairo for transparent PNG support
+        drawer = rdMolDraw2D.MolDraw2DCairo(1000, 1000)
+        opts = drawer.drawOptions()
+        opts.clearBackground = False # Transparent background
+
+        rdMolDraw2D.PrepareAndDrawMolecule(drawer, mol)
+        drawer.FinishDrawing()
+
+        img_byte_arr = drawer.GetDrawingText()
 
         return Response(content=img_byte_arr, media_type="image/png")
     except Exception as e:
