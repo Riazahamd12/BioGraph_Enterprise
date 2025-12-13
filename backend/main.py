@@ -11,7 +11,7 @@ import requests
 
 # --- RDKit IMPORTS ---
 from rdkit import Chem
-from rdkit.Chem import Descriptors, QED
+from rdkit.Chem import Descriptors, QED, Draw
 
 app = FastAPI()
 
@@ -23,6 +23,21 @@ class AnalysisRequest(BaseModel):
     target_id: str = None
     smiles: str = None
     mode: str
+
+# --- GLOBAL DATA CACHE ---
+DRUGS_DF = None
+
+def load_drugs_data():
+    global DRUGS_DF
+    if os.path.exists("drugs.csv"):
+        try:
+            DRUGS_DF = pd.read_csv("drugs.csv")
+            print("Loaded drugs.csv into memory.")
+        except Exception as e:
+            print(f"Error loading drugs.csv: {e}")
+
+# Load data on startup
+load_drugs_data()
 
 # --- HELPER: RDKit PROPERTIES ---
 def calculate_properties(smiles):
@@ -37,24 +52,42 @@ def calculate_properties(smiles):
     except:
         return None
 
+def process_drug_row(row):
+    """Helper to process a drug row from DataFrame"""
+    score = round(random.uniform(5.0, 9.9), 2)
+    return {
+        "name": row['name'],
+        "smiles": row['smiles'],
+        "score": score,
+        "status": "ACTIVE" if score > 7.5 else "INACTIVE"
+    }
+
 @app.get("/")
 def home():
     return {"status": "BioGraph AI Engine Ready 🟢"}
 
 @app.get("/get_image")
 def get_image(smiles: str):
-    url = f"https://cactus.nci.nih.gov/chemical/structure/{smiles}/image?width=1000&height=1000&bgcolor=transparent"
     try:
-        r = requests.get(url)
-        return Response(content=r.content, media_type="image/png")
-    except:
-        return Response(status_code=404)
+        mol = Chem.MolFromSmiles(smiles)
+        if not mol:
+            return Response(status_code=404)
+
+        img = Draw.MolToImage(mol, size=(1000, 1000))
+        img_byte_arr = io.BytesIO()
+        img.save(img_byte_arr, format='PNG')
+        img_byte_arr = img_byte_arr.getvalue()
+
+        return Response(content=img_byte_arr, media_type="image/png")
+    except Exception as e:
+        print(f"Error generating image: {e}")
+        return Response(status_code=500)
 
 @app.post("/analyze")
 def analyze_drug(data: AnalysisRequest):
     # 1. MANUAL MODE
     if data.mode == "manual":
-        time.sleep(1)
+        # Removed artificial delay time.sleep(1)
         props = calculate_properties(data.smiles)
         if not props: return {"error": "Invalid Structure"}
         
@@ -82,18 +115,19 @@ def analyze_drug(data: AnalysisRequest):
 
     # 2. AUTO SCAN MODE
     elif data.mode == "auto":
-        time.sleep(1.5)
+        # Removed artificial delay time.sleep(1.5)
         results = []
-        if os.path.exists("drugs.csv"):
+        df = None
+
+        if DRUGS_DF is not None:
+            df = DRUGS_DF
+        elif os.path.exists("drugs.csv"):
+             # Fallback if global load failed
             df = pd.read_csv("drugs.csv")
+
+        if df is not None:
             for _, row in df.iterrows():
-                score = round(random.uniform(5.0, 9.9), 2)
-                results.append({
-                    "name": row['name'],
-                    "smiles": row['smiles'],
-                    "score": score,
-                    "status": "ACTIVE" if score > 7.5 else "INACTIVE"
-                })
+                results.append(process_drug_row(row))
             results.sort(key=lambda x: x["score"], reverse=True)
             return {"type": "batch", "results": results[:20]}
         else:
